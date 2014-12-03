@@ -1,24 +1,49 @@
-$( document ).ready(function() {
+  $(".buscar").submit(function(event) {
+var service_url = 'https://www.googleapis.com/freebase/v1/search';
+  var busqueda = $("input[ name=text]").val();
+  $(".text").val ("") 
+  $(".informacion").empty()
+  var params = {
+   
+    'query': busqueda,
+    'filter': '(all type:/music/artist)' ,
+    'limit': 10,
+    'indent': true
+  };
+  $.getJSON(service_url + '?callback=?', params, function(response) {
+    var conteo = 0
+    $.each(response.result, function(i, result) {
+      var resultados = {text:result['name']}.text
+      conteo += 1
+      var show = '<tr>'+'<td>' + conteo+ '<td>' +resultados+ '</tr>' + '</td>'
 
-  var service_url = 'https://www.googleapis.com/freebase/v1/search';
-
-  $("#search-button").click( function() {
-    var query = $( "input[name='search']" ).val();
-    alert(query);
-
-    var params = {
-      'query': query,
-      'filter': '(all type:/music/artist )',
-      'limit': 10,
-      'indent': true
-    };
-
-    $.getJSON(service_url + '?callback=?', params, function(response) {
-      alert(response);
-      $.each(response.result, function(i, result) {
-        $('<div>',{text:result['name']}, '</div>').appendTo(".informacion");
-      });
+      $(".informacion").append(show);
     });
   });
+event.preventDefault();
 
 });
+
+$('input[name="filtros"]').click(function(){
+var service_url = 'https://www.googleapis.com/freebase/v1/search';
+  busqueda = $(".texto").val();
+  $(".informacion").empty()
+  var params = {
+   
+    'query': busqueda,
+    'filter': '(all type:/music/album)',
+    'limit': 10,
+    'indent': true
+  };
+  $.getJSON(service_url + '?callback=?', params, function(response) {
+    var conteo = 0
+    $.each(response.result, function(i, result) {
+      var resultados = {text:result['name']}.text;
+      var show2 =  '<input type="checkbox" name="filtro" value="0"> '+resultados+'<br>';
+
+      $(".informacion").append(show2);
+    });
+  });
+event.preventDefault();
+});
+  
