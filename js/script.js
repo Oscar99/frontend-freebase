@@ -1,24 +1,70 @@
 $( document ).ready(function() {
 
-  var service_url = 'https://www.googleapis.com/freebase/v1/search';
+  function getFilters() {
+    var filters = "(all ";
+    $("input[type=checkbox]:checked").each(function() {
+      filters += " type:/" + $(this).val() + "/";
 
-  $("#search-button").click( function() {
-    var query = $( "input[name='search']" ).val();
-    alert(query);
 
+    });
+    filters += ")";
+
+    var result;
+
+    if (filters != "(all )") {
+      result = filters;
+    } else {
+      result = null;
+    }
+
+    return result;
+  }
+
+  function musicFilter() {
+    
+  }
+
+  function searchFreebase(query, filters) {
+    console.log("search freebase called");
+
+    var service_url = 'https://www.googleapis.com/freebase/v1/search';
     var params = {
       'query': query,
-      'filter': '(all type:/music/artist )',
-      'limit': 10,
+      'limit': 20,
       'indent': true
     };
 
+    if (filters) {
+      params['filter'] = filters;
+    }
+
+    console.log(params);
+
     $.getJSON(service_url + '?callback=?', params, function(response) {
-      alert(response);
+      // alert(response);
       $.each(response.result, function(i, result) {
-        $('<div>',{text:result['name']}, '</div>').appendTo(".informacion");
+        var searchResult = "<div class='panel panel-default'>"
+                              + "<div class='panel-body'>"
+                                + "<h4>" + result['name'] + "</h4>"
+                                + "<p class='lead'>" +  JSON.stringify(result['notable']['name']) + "</p>"
+                              + "</div>"
+                            + "</div>";
+        $(".info").append(searchResult);
       });
     });
+
+  }
+
+
+  $("form[name='search-form']").change( function() {
+    alert();
+    $(".info").empty();
+    var query = $( "input[name='search']" ).val();
+
+    var filters = getFilters();
+    searchFreebase(query, filters);
+
   });
+
 
 });
